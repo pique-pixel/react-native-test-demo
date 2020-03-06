@@ -16,7 +16,9 @@ Below are the steps that has been completed :
 
 ####  3. Each card has a 'share' button that creates an sms on the phone that has the image and a deep link into the image's card
 
+#### 4. Deep link is directing the user to the app .
+
 
 #### Pending Step :
    
-   ##### Deep link is not directing the user to the app. 
+   ##### Deep link is not directing the user to specific image card in the app. 
