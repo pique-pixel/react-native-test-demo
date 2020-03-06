@@ -136,7 +136,7 @@ class App extends React.Component {
                         openSmsUrl(
                               '',
                               'Hey Check this out ' +
-                                url +
+                                'demo_app://demo_app/' +
                                 item.key +
                                 ' \nBy ' +
                                 item.by,
