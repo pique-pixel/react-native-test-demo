@@ -3,7 +3,7 @@
 
 As Mock shown in  https://balsamiq.cloud/s1yfxvo/prly0w/r2278
 
-Below are the steps that has been compeleted :
+Below are the steps that has been completed :
 
 #### 1.  Displays a two tab feed of images :
    
