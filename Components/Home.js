@@ -1,85 +1,241 @@
-import React, {Component} from 'react';
-import {StyleSheet, View, Text, Button, Image, FlatList} from 'react-native';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow
+ */
 
-import Axios from 'axios';
+import React, {useState, Component} from 'react';
+import {
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  View,
+  Text,
+  Image,
+  StatusBar,
+  Button,
+  FlatList,
+  Linking,
+  Platform,
+  TouchableOpacity,
+} from 'react-native';
+
+function openUrl(url: string) {
+  return Linking.openURL(url);
+}
+
+function openSmsUrl(phone: string, body: string): Promise<any> {
+  return openUrl(`sms:${phone}${getSMSDivider()}body=${body}`);
+}
+function getSMSDivider(): string {
+  return Platform.OS === 'ios' ? '&' : '?';
+}
+
+const imageList = [
+  {
+    key: '1',
+    url: 'https://picsum.photos/seed/200/300?random=1&',
+    by: 'Shubham Singh Chahar',
+  },
+  {
+    key: '2',
+    url: 'https://picsum.photos/seed/200/300?random=2&',
+    by: 'Sonu Sharma',
+  },
+  {
+    key: '3',
+    url: 'https://picsum.photos/seed/200/300?random=3&',
+    by: 'Sutej Pal',
+  },
+  {
+    key: '4',
+    url: 'https://picsum.photos/seed/200/300?random=4&',
+    by: 'Rohan Kashyap',
+  },
+];
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      images: [],
-      isGray: false,
+      grayscale: false,
     };
   }
-  componentDidMount(e) {
-    Axios.get('https://picsum.photos/v2/list')
-      .then(response => {
-        this.setState({
-          images: response.data,
-        });
-      })
-      .catch();
-  }
-
-  //set the data into the flat list
-
-  renderItem = ({item}) => {
-    console.log(this.state.isGray);
-
-    //   let url=`https://i.picsum.photos/id`+`{item.id}`+'/200'
-    let url = '';
-    if (this.state.isGray) {
-      url = item.download_url + '?grayscale';
-    } else {
-      url = item.download_url;
-    }
-
-    return (
-      <View style={{margin: 5, padding: 5}}>
-        <Image source={{uri: url}} style={{width: 200, height: 200}} />
-        <Text>by {
-        item.author}</Text>
-        <Button title="Share" onPress={() => {
-            
-        }} />
-      </View>
-    );
+  static navigationOptions = {
+    // A
+    title: 'Home',
   };
+
+  get grayscale() {
+    return this.state.grayscale;
+  }
+  setGrayscale(value) {
+    this.setState({
+      grayscale: value,
+    });
+  }
 
   render() {
     return (
-      <View>
-        <Button
-          title="GrayColor"
-          onPress={() => {
-            this.setState({
-              isGray: true,
-            });
-            console.log(this.state.isGray);
-          }}
-        />
-        <Button
-          title="Color"
-          onPress={() => {
-            this.setState({
-              isGray: false,
-            });
-            console.log(this.state.isGray);
-          }}
-        />
-        <FlatList
-          data={this.state.images}
-          ItemSeparatorComponent={this.FlatListItemSeparator}
-          renderItem={this.renderItem}
-        />
-      </View>
+      <>
+        <StatusBar barStyle="dark-content" />
+        <SafeAreaView>
+          <ScrollView
+            contentInsetAdjustmentBehavior="automatic"
+            style={styles.scrollView}>
+            <View
+              style={{
+                marginTop: 20,
+                display: 'flex',
+                flexDirection: 'row',
+                margin: 'auto',
+                justifyContent: 'center',
+              }}>
+              <View style={{flex: 1, paddingLeft: 40}}>
+                <Button
+                  onPress={() => {
+                    this.setGrayscale(false);
+                  }}
+                  title="Color"
+                  color={this.state.grayscale ? 'gray' : 'dodgerblue'}
+                />
+              </View>
+              <View style={{flex: 1, paddingRight: 40}}>
+                <Button
+                  onPress={() => {
+                    this.setGrayscale(true);
+                  }}
+                  title="Grayscale"
+                  color={!this.state.grayscale ? 'gray' : 'dodgerblue'}
+                />
+              </View>
+            </View>
+            {imageList.map(item => {
+              return (
+                <TouchableOpacity
+                  key={item.key}
+                  onPress={() =>
+                    this.props.navigation.navigate('ImageDetail', {
+                      id: item.key,
+                      author: item.by,
+                      url: item.url + (this.state.grayscale ? 'grayscale' : ''),
+                    })
+                  }>
+                  <View
+                    key={item.key}
+                    style={{padding: 20, margin: 20,}}>
+                    <Image
+                      source={{
+                        uri:
+                          item.url + (this.state.grayscale ? 'grayscale' : ''),
+                      }}
+                      style={{width: 'auto', height: 200}}
+                    />
+                    <View
+                      style={{
+                        marginTop: 15,
+                        marginBottom: 15,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}>
+                      <Text>By {item.by}</Text>
+                      <Button
+                        title="Share"
+                        color="red"
+                        onPress={() => {
+                          let grayScale = this.state.grayscale
+                            ? '?grayscale'
+                            : '';
+                          openSmsUrl(
+                            '',
+                            'Hey Check this out ' +
+                              'http://demo/' +
+                              item.key +
+                              grayScale +
+                              ' \nBy ' +
+                              item.by,
+                          );
+                        }}
+                      />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </SafeAreaView>
+      </>
     );
   }
 }
+
+function ImageCard({grayscale, id = ''}) {
+  return (
+    <View key={id} style={{padding: 20, margin: 20}}>
+      <Image
+        source={{
+          uri:
+            'https://picsum.photos/seed/200/300?' +
+            (grayscale ? 'grayscale' : ''),
+        }}
+        style={{width: 'auto', height: 200}}
+      />
+      <View
+        style={{
+          marginTop: 15,
+          marginBottom: 15,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <Text>{item.by}</Text>
+        <Button title="Share" color="red" />
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  shareButton: {
-    width: 100,
-    backgroundColor: 'tomato',
+  scrollView: {
+    backgroundColor: 'white',
+  },
+  engine: {
+    position: 'absolute',
+    right: 0,
+  },
+  body: {
+    backgroundColor: 'white',
+  },
+  sectionContainer: {
+    marginTop: 32,
+    paddingHorizontal: 24,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: 'black',
+  },
+  sectionDescription: {
+    marginTop: 8,
+    fontSize: 18,
+    fontWeight: '400',
+    color: '#232323',
+  },
+  highlight: {
+    fontWeight: '700',
+  },
+  footer: {
+    color: '#232323',
+    fontSize: 12,
+    fontWeight: '600',
+    padding: 4,
+    paddingRight: 12,
+    textAlign: 'right',
   },
 });
 
