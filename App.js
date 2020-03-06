@@ -6,7 +6,7 @@
  * @flow
  */
 
-import React, {useState} from 'react';
+import React, {useState,Component} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -22,6 +22,7 @@ import {
 } from 'react-native';
 
 function openUrl(url: String) {
+  console.log("url>>>>>>>>>>>"+url);
   return Linking.openURL(url);
 }
 
@@ -55,7 +56,7 @@ const imageList = [
   },
 ];
 
-class App extends React.Component {
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -75,6 +76,7 @@ class App extends React.Component {
       grayscale: value,
     });
   }
+ 
   render() {
     return (
       <>
@@ -136,7 +138,7 @@ class App extends React.Component {
                         openSmsUrl(
                               '',
                               'Hey Check this out ' +
-                                'demo_app://demo_app/' +
+                                'http://demo/' +
                                 item.key +
                                 ' \nBy ' +
                                 item.by,
